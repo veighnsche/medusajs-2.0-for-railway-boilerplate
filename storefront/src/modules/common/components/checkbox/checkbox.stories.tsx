@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from "@storybook/react/dist"
+import type { Meta, StoryObj } from "@storybook/react"
 import { type ComponentProps, useState } from "react"
 
 import CheckboxWithLabel from "."

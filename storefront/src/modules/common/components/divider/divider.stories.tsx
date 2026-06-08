@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from "@storybook/react/dist"
+import type { Meta, StoryObj } from "@storybook/react"
 import type { ComponentProps, ComponentType } from "react"
 
 import Divider from "."
