@@ -1,5 +1,10 @@
 import { useState } from "react"
-import type { CSSProperties, KeyboardEvent, ReactNode } from "react"
+import type {
+  CSSProperties,
+  InputHTMLAttributes,
+  KeyboardEvent,
+  ReactNode,
+} from "react"
 
 type SuzyTone = "pink" | "blue" | "yellow" | "purple" | "white"
 
@@ -16,6 +21,14 @@ type SuzyImageInteractionState = "idle" | "hover" | "pressed"
 type SuzyGlassButtonProps = SuzyButtonProps & {
   state?: SuzyGlassButtonState
   trailingIcon?: ReactNode
+}
+
+type SuzyGlassInputProps = Omit<
+  InputHTMLAttributes<HTMLInputElement>,
+  "children"
+> & {
+  label?: string
+  tone?: SuzyTone
 }
 
 type Meter = {
@@ -563,12 +576,17 @@ export const SuzyIconTile = ({
 export const SuzyGlassTextInput = ({
   label = "Enter your username",
   tone = "blue",
-}: {
-  label?: string
-  tone?: SuzyTone
-}) => (
+  className,
+  id,
+  placeholder,
+  ...inputProps
+}: SuzyGlassInputProps) => (
   <label
-    className="relative block w-full overflow-hidden border border-white/25 px-5 py-4 text-[var(--suzy-glass-text)] shadow-[0_8px_22px_rgba(0,0,0,0.5),inset_0_1px_0_rgba(255,255,255,0.72),inset_0_-10px_24px_rgba(0,0,0,0.32)]"
+    className={cx(
+      "relative block w-full overflow-hidden border border-white/25 px-5 py-4 text-[var(--suzy-glass-text)] shadow-[0_8px_22px_rgba(0,0,0,0.5),inset_0_1px_0_rgba(255,255,255,0.72),inset_0_-10px_24px_rgba(0,0,0,0.32)] focus-within:ring-2 focus-within:ring-white",
+      className
+    )}
+    htmlFor={id}
     style={{
       ...glassToneStyle[tone],
       background:
@@ -583,18 +601,32 @@ export const SuzyGlassTextInput = ({
       className="pointer-events-none absolute inset-[5px] border border-white/20"
     />
     <GlassCorners />
-    <span className="relative z-10 flex items-center justify-between gap-4">
-      <span className="truncate text-xl font-black uppercase leading-none">
-        {label}
-      </span>
+    <span className="relative z-10 flex items-center gap-4">
+      <input
+        aria-label={inputProps["aria-label"] ?? label}
+        className="min-w-0 flex-1 bg-transparent text-xl font-black uppercase leading-none outline-none placeholder:text-[var(--suzy-glass-text)] placeholder:opacity-85"
+        id={id}
+        placeholder={placeholder ?? label}
+        {...inputProps}
+      />
       <span className="h-6 w-2 animate-pulse bg-black/80" />
     </span>
   </label>
 )
 
-export const SuzyGlassSearchField = () => (
-  <div
-    className="relative flex h-20 w-full items-center justify-between overflow-hidden border border-white/25 px-6 text-black shadow-[0_8px_22px_rgba(0,0,0,0.5),inset_0_1px_0_rgba(255,255,255,0.72),inset_0_-10px_24px_rgba(0,0,0,0.32)]"
+export const SuzyGlassSearchField = ({
+  label = "Search",
+  className,
+  id,
+  placeholder = "Search...",
+  ...inputProps
+}: Omit<SuzyGlassInputProps, "tone">) => (
+  <label
+    className={cx(
+      "relative flex h-20 w-full items-center justify-between overflow-hidden border border-white/25 px-6 text-black shadow-[0_8px_22px_rgba(0,0,0,0.5),inset_0_1px_0_rgba(255,255,255,0.72),inset_0_-10px_24px_rgba(0,0,0,0.32)] focus-within:ring-2 focus-within:ring-white",
+      className
+    )}
+    htmlFor={id}
     style={{
       ...glassToneStyle.white,
       background:
@@ -603,18 +635,24 @@ export const SuzyGlassSearchField = () => (
       fontFamily: monoFace,
     }}
   >
+    <span className="sr-only">{label}</span>
     <span
       aria-hidden="true"
       className="pointer-events-none absolute inset-[5px] border border-white/25"
     />
     <GlassCorners />
-    <span className="relative z-10 text-2xl font-black uppercase leading-none text-black/70">
-      Search...
-    </span>
-    <span className="relative z-10">
+    <input
+      aria-label={inputProps["aria-label"] ?? label}
+      className="relative z-10 min-w-0 flex-1 bg-transparent text-2xl font-black uppercase leading-none text-black/70 outline-none placeholder:text-black/70"
+      id={id}
+      placeholder={placeholder}
+      type="search"
+      {...inputProps}
+    />
+    <span aria-hidden="true" className="relative z-10">
       <Search />
     </span>
-  </div>
+  </label>
 )
 
 export const SuzyGlassPlaybackControls = () => (
@@ -663,9 +701,15 @@ export const SuzyGlassButtonKit = () => (
 
     <div className="flex flex-col justify-between gap-4">
       <SuzyGlassPlaybackControls />
-      <SuzyGlassSearchField />
-      <SuzyGlassTextInput />
-      <SuzyGlassTextInput label="Password ********" tone="yellow" />
+      <SuzyGlassSearchField name="query" />
+      <SuzyGlassTextInput name="username" />
+      <SuzyGlassTextInput
+        aria-label="Password"
+        label="Password"
+        name="password"
+        tone="yellow"
+        type="password"
+      />
       <div className="grid gap-3 small:grid-cols-4">
         <SuzyGlassButton tone="pink" trailingIcon={null}>
           Submit
